@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>护理单配置</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/FlatUI/css/flat-ui.min.css" rel="stylesheet">
+    <link href="css/spop.min.css" rel="stylesheet">
+    <link href="css/default.css" rel="stylesheet">
+</head>
+
+<body ng-app="myApp" ng-controller="myCtrl">
+    <!-- <div style="position: fixed;left: 0; top: 0;width: 380px;">
+        status.isEnableTemplate{{status.isEnableTemplate}}
+        <br><br>
+        template.activeTemplateName{{template.activeTemplateName}}
+        <br><br>
+        fieldsConfig:{{fieldsConfig}}
+    </div> -->
+    <div class="container config">
+        <div class="list-group list--nav">
+            <a href="javascrip:void(0);" ng-repeat="item in listGroup.items track by $index" ng-class="listGroup.getItemClass(item)"
+                ng-click="listGroup.clickChangeItem(item)">
+                {{item}}
+            </a>
+        </div>
+        <div class="tab-content">
+            <div ng-if="listGroup.activeItemName == '基础设置'">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">标题名称</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" ng-model="fieldsConfig.title">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">副标题名称</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" ng-model="fieldsConfig.subTitle">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div ng-if="listGroup.activeItemName == '样式设置'">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">字体大小</label>
+                        <div class="col-sm-10">
+                            <input type="number" class="form-control" ng-model="fieldsConfig.styles.font_size">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">字段名宽度</label>
+                        <div class="col-sm-10">
+                            <input type="number" class="form-control" ng-model="fieldsConfig.styles.fixed_name_width">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">字段内容宽度</label>
+                        <div class="col-sm-10">
+                            <input type="number" class="form-control" ng-model="fieldsConfig.styles.fixed_item_width">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div ng-if="listGroup.activeItemName == '患者信息设置'">
+                <form class="form-horizontal" style="margin: -10px 0 0 15px;">
+                    <div class="form-group margin_bottom0" ng-repeat="list in fieldsConfig.listInfo | orderBy:'sort'">
+                        <div class="clearfix padding_top10 padding_bottom10"  style="position: relative;"
+                             ng-drag="true" ng-drop="true" ng-drag-data="list"
+                            ng-drop-success="sort.dropSuccess(list,$data,$event)">
+                            <div class="col-sm-4 padding_right0">
+                                <input type="text" class="form-control" placeholder="字段名" ng-model="list.name">
+                            </div>
+                            <div class="col-sm-7 padding_right0">
+                                <input type="text" class="form-control" placeholder="字段内容" ng-model="list.value">
+                            </div>
+                            <div class="col-sm-1">
+                                <i class="fa fa-bars form_icon drag_icon" ng-drag-handle="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div ng-if="listGroup.activeItemName == '字段内容设置'">
+                <button class="btn btn-block btn-lg btn-info" ng-click="fieldItem.clickOpenItemModal()">添加</button>
+
+                <div style="height:calc(100vh - 90px);overflow-y: auto;">
+                    <div class="text_light text-center margin_top20" style="font-size: 1.1em;"
+                     ng-if="!fieldsConfig.fields.length">暂无字段</div>
+                    <div class="line clearfix" ng-repeat="field in fieldsConfig.fields  | orderBy:'sort'"
+                        ng-drag="true" ng-drop="true" ng-drag-data="field"
+                        ng-drop-success="sort.dropSuccess(field,$data,$event)">
+                        <div class="left" style="margin-top: 5px;">
+                            <span class="field_name">{{field.name}}</span>
+                        </div>
+                        <div class="right">
+                            <div ng-if="field.lineNum" ng-bind-html="htmlFunc.getUnderlineHTML(field.lineNum) | htmlTrusted"></div>
+                            <div ng-if="!field.lineNum">
+                                <label class="inline_block {{fieldItem.getBoxClass(field)}}"  
+                                    ng-repeat="fieldContent in field.content"
+                                    ng-style="stylesFunc.getFieldItemStyle(fieldContent);">
+                                    <input type="{{fieldItem.getBoxClass(field)}}" name="{{field.name}}"
+                                        data-toggle="{{fieldItem.getBoxClass(field)}}" 
+                                        class="custom-{{fieldItem.getBoxClass(field)}}">
+                                    <span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+                                    <span class="field_item_content" ng-bind-html="htmlFunc.getFieldContentHTML(fieldContent.detail) | htmlTrusted"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="line_operate">
+                            <i class="fa fa-bars form_icon drag_icon" ng-drag-handle="true"></i>
+                            <i class="fa fa-times form_icon delete_icon" ng-click="fieldItem.clickDeleteField(field)"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div ng-if="listGroup.activeItemName == '导出'">
+                <div ng-if="export.contents" >
+                    <pre style="height:calc(100vh - 90px);overflow-y: auto;"><code id="copy_code">{{export.contents}}</code></pre>
+                    <div class="clearfix">
+                        <button class="btn btn-lg btn-inverse pull-left" id="copy_btn" 
+                                data-clipboard-action="copy" 
+                                data-clipboard-target="#copy_code">
+                                复制内容
+                        </button>
+                        <button class="btn btn-lg btn-info pull-right"
+                                ng-click="template.clickOpenTemplateModal()">
+                                另存为模板
+                        </button>
+                        <button class="btn btn-lg btn-primary pull-right margin_right20"
+                                ng-if="status.isEnableTemplate"
+                                ng-click="template.clickSaveAsTemplate()">
+                                保存模板
+                        </button>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- modal -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="itemModal" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">项目设置</h4>
+                </div>
+                <div class="modal-body clearfix">
+
+                    <!-- step 1 选择项目类型 -->
+                    <div class="container-fluid field_item_type" ng-if="!status.isEditingMode">
+                        <div class="col-xs-1"></div>
+                        <div class="col-xs-5">
+                            <div class="select_item_type" ng-class="status.activeFieldType == 1 ? 'selected' : ''"
+                                ng-click="fieldItem.clickSelectItemType(1)">
+                                <img src="images/type1.png" alt="" class="img-responsive">
+                            </div>
+                        </div>
+                        <div class="col-xs-5">
+                            <div class="select_item_type" ng-class="status.activeFieldType == 2 ? 'selected' : ''"
+                                ng-click="fieldItem.clickSelectItemType(2)">
+                                <img src="images/type2.png" alt="" class="img-responsive">
+                            </div>
+                        </div>
+                        <div class="col-xs-1"></div>
+                    </div>
+
+                    <!-- step2 fieldItemType == 1 -->
+                    <div class="container-fluid" ng-if="status.activeFieldType == 1 && status.isEditingMode">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-xs-2 control-label padding_left0">项目名称</label>
+                                <div class="col-xs-10">
+                                    <input type="text" class="form-control col-xs-10" set-focus 
+                                           ng-model="editingField.name">
+                                </div>
+                            </div>
+                            <div class="form-group margin_bottom0">
+                                <label class="col-xs-2 control-label padding_left0">文本行数</label>
+                                <div class="col-xs-10">
+                                    <input type="number" class="form-control col-xs-10" min="1" max="5" ng-model="editingField.lineNum">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- step2 fieldItemType == 2 -->
+                    <div class="container-fluid" ng-if="status.activeFieldType == 2 && status.isEditingMode">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-xs-2 control-label padding_left0">项目名称</label>
+                                <div class="col-xs-10 padding_right0">
+                                    <input type="text" class="form-control" set-focus ng-model="editingField.name">
+                                </div>
+                            </div>
+                            <!-- <div class="form-group">
+                                <label class="col-xs-2 control-label padding_left0">单/复选框</label>
+                                <div class="col-xs-10 padding_right0">
+                                    <label class="radio inline_block" style="width: 120px;">
+                                        <input type="radio" name="isCheckbox" ng-value="1" 
+                                               ng-model="editingField.isCheckbox" data-toggle="radio" 
+                                               class="custom-radio">
+                                        <span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+                                        复选框
+                                    </label>
+                                    <label class="radio inline_block" style="width: 120px;">
+                                        <input type="radio" name="isCheckbox" ng-value="0" 
+                                               ng-model="editingField.isCheckbox" data-toggle="radio" 
+                                               class="custom-radio">
+                                        <span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
+                                        单选框
+                                    </label>
+                                </div>
+                            </div> -->
+                            <div ng-repeat="field in editingField.content track by $index" class="form-group">
+                                <label class="col-xs-2 control-label padding_left0">内容{{$index+1}}</label>
+                                <div class="col-xs-9">
+                                    <input type="text" class="form-control" placeholder="文本框请用#input#代替" 
+                                           ng-model="field.detail" id="detail_{{$index+1}}">
+                                </div>
+                                <div class="col-xs-1 padding_left0 padding_right0">
+                                    <i class="fa fa-times form_icon delete_icon" ng-click="fieldItem.clickDeleteFieldContent(field)"></i>
+                                </div>
+                            </div>
+                            <div class="form-group margin_bottom0">
+                                <button class="btn btn-block btn-info" ng-click="fieldItem.clickAddNewContent();">添加内容</button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-info btn-sm" ng-click="fieldItem.clickSaveItemType();"
+                        ng-if="!status.isEditingMode">下一步</button>
+                    <button type="button" class="btn btn-info btn-sm" ng-click="fieldItem.clickSaveField();" ng-if="status.isEditingMode">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 存储模板 modal -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="saveTemplateModal" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">另存为模板</h4>
+                </div>
+                <div class="modal-body clearfix">
+                    <form class="form-horizontal">
+                        <div class="form-group margin_bottom0">
+                            <label class="col-xs-2 control-label padding_left0">模板名称</label>
+                            <div class="col-xs-10">
+                                <input type="text" class="form-control col-xs-10"
+                                        ng-model="template.activeTemplateName">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-info btn-sm" ng-click="template.clickSaveTemplate();">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 初始化 选择模板 modal -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="templateViewModal" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">选择模板</h4>
+                </div>
+                <div class="modal-body clearfix">
+                    <div class="tile_wrap">
+                        <div class="tile" 
+                             ng-repeat="temp in template.templateArrs track by $index">
+                            <img class="tile-image big-illustration" src="images/printer.svg">
+                            <h3 class="tile-title margin_bottom20 nowrap" 
+                                init-tooltip
+                                data-toggle="tooltip" title="{{temp.templateName}}" data-placement="top"
+                                data-container="body"
+                                >{{temp.templateName}}</h3>
+                            <a class="btn btn-info btn-large btn-block" href="#" ng-click="template.clickEnableTemplate(temp)">启用此模板</a>
+                            <i class="fa fa-times form_icon delete_icon" ng-click="template.deleteTemplate(temp)"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-sm" ng-click="template.clickEnableTemplate()">不使用模板</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/angular.min.js"></script>
+    <script src="js/ngDraggable.js"></script>
+    <script src="js/underscore.js"></script>
+    <script src="js/spop.min.js"></script>
+    <script src="js/clipboard.min.js"></script>
+    <script src="js/default.js"></script>
+</body>
+
+</html>

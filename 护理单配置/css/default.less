@@ -1,0 +1,240 @@
+@import '../font-awesome/font-awesome';
+@import 'FlatUI/variables';
+
+.nowrap{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+} 
+.form-group.focus .form-control, 
+.form-group.focus .select2-search input[type="text"],
+ .select2-search .form-group.focus input[type="text"], 
+ .form-control:focus, 
+ .select2-search input[type="text"]:focus{
+    border-color: @peter-river;
+ }
+
+.generate(@attrName,@classPrefix, @n, @i: 0) when (@i =< @n) {
+    .@{classPrefix}@{i} {
+      @{attrName}: unit(@i,px)!important;
+    }
+    .generate(@attrName, @classPrefix, @n, (@i + 1));
+}
+// margin  margin_top0-margin_top20 ...
+.generate(margin-top,margin_top,20);
+.generate(margin-bottom,margin_bottom,20);
+.generate(margin-left,margin_left,20);
+.generate(margin-right,margin_right,20);
+
+// padding  padding_top0-padding_top20 ...
+.generate(padding-top,padding_top,20);
+.generate(padding-bottom,padding_bottom,20);
+.generate(padding-left,padding_left,20);
+.generate(padding-right,padding_right,20);
+
+.text_light { color: @silver; }
+// reset spop
+.spop-container{
+    .spop--error, .spop--info, .spop--success, .spop--warning{
+        border-radius: 8px;
+        // border: 1px solid #ebeef5;
+        box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+        // background-color: #fff;
+        // color: @wet-asphalt;
+    }
+    .spop-body {
+        font-size: 16px;
+    }
+    .spop-icon {
+        top: 18px;
+    }
+    .spop-close{
+        color: #fff;
+    }
+}
+
+//reset tooltip
+.tooltip-inner{
+    max-width: initial;
+}
+
+
+//reset modal
+.modal{
+    .modal-header {
+        background-color: @peter-river;
+        border-radius: 6px 6px 0 0;
+        .modal-title {
+            color: #fff;
+            font-size: 1.3em;
+        }
+        .close {
+            color: #000;
+            font-size: 2em;
+        }
+    }
+}
+
+// drag
+[ng-drop].drag-enter{
+    box-shadow: 1px 1px 15px #868686;
+    border-radius: 4px;
+    background: #f6f8fa;
+}
+.visibility_hidden {
+    visibility: hidden!important;
+}
+.inline_block{
+    display: inline-block!important;
+}
+label.radio,label.checkbox{
+    cursor: pointer;
+}
+body {
+    font-size: 14px;
+}
+.config.container {
+    padding: 15px 0;
+}
+.list-group-item.active,
+.list-group-item.active:focus, 
+.list-group-item.active:hover{
+     background-color: @emerald;
+     border-color: @nephritis;
+ }
+
+ .list--nav{
+    float: left;
+     width: 300px;
+ }
+ .tab-content{
+     float: left;
+     width: calc(~"100% - 315px");
+     margin-left: 15px;
+     height: calc(~"100vh - 30px");
+     overflow-y: auto;
+     overflow-x: hidden;
+ }
+
+ .form_icon{
+    height: 42px;
+    padding-top: 5px;
+    font-size: 32px;
+    width: 100%;
+    text-align: center;
+    cursor: pointer;
+    + .form_icon{
+        margin-left: 5px;
+    }
+ }
+ .delete_icon{
+     color: @alizarin;
+ }
+ .drag_icon{
+     padding-top: 8px;
+     font-size: 28px;
+     color: @gray-light;
+     cursor: all-scroll;
+ }
+.edit_icon{ 
+    color: @wet-asphalt;
+}
+
+.line{
+    
+@line_left_width: 100px;
+@line_operate_width: 70px;
+    padding: 5px;
+    position: relative;
+    margin-top: 10px;
+    .left,.right{
+        float: left;
+    }
+    .left {
+        width: @line_left_width;
+    }
+    .right {
+        width:calc(~"100% - @{line_left_width} - @{line_operate_width} - 16px");
+    }
+    .field_name,
+    .checkbox.inline_block,
+    .radio.inline_block{
+        display: inline-block;
+        width: 120px;
+        vertical-align: top;
+    }
+    .field_name {
+        width: 100%;
+        .nowrap();
+    }
+    .field_item_content {
+        display: inline-block;
+        width: 100%;
+        .nowrap();
+    }
+    .underline {
+        width: 100%;
+        display: inline-block;
+        border-bottom: 2px solid #a1a499;
+        position: relative;
+        top: 5px;
+    }
+    .line_operate{
+        .form_icon {
+            width: 30px;
+        }
+        width: @line_operate_width;
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+}
+
+
+// 项目类型
+.field_item_type{
+    padding: 30px 15px;
+    .select_item_type{
+      padding: 8px;
+      cursor: pointer;
+      border-radius: 6px;
+      &:hover,
+      &.selected {
+        box-shadow: 1px 1px 15px #7F95D1;
+        transform: translateY(-10px);
+        transition: linear .2s all;
+      }
+    }
+  }
+
+
+
+#templateViewModal{
+    .modal-dialog{
+        width: 900px;
+    }
+    .tile_wrap {
+        display: flex;
+        flex-wrap: wrap;
+         justify-content: center;
+        .tile { 
+            width: 200px;
+            margin-right:10px;
+            display: inline-block;
+            margin-bottom: 0;
+            .tile-title {
+                cursor: default;
+            }
+            &:last-child{
+                margin-right: 0;
+            }
+            i.delete_icon{
+                position: absolute;
+                top: 0;
+                right: 10px;
+                width: auto;
+            }
+        }
+    }
+    
+}
