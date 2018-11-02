@@ -82,6 +82,7 @@ app.controller('myCtrl', function($scope) {
             $scope.listGroup.activeItemName = xName;
             if( xName == "导出"){
                 $scope.export.clickExportContents();
+                $scope.exportFill.clickExportContents();
             }
         }
     }
@@ -190,94 +191,8 @@ app.controller('myCtrl', function($scope) {
     $scope.htmlFunc.getFieldContentHTML = function(xDetail){
         return xDetail.replace(/#input#/g,'<span class="underline" style="width: 50px;"></span>');
     }
-
-
-    $scope.export = {
-        contents: ""
-    };
-    $scope.export.getStylesContent = function(){
-        if($scope.fieldsConfig.styles.fixed_name_width == 70 && 
-           $scope.fieldsConfig.styles.fixed_item_width == 70 && 
-           $scope.fieldsConfig.styles.font_size == 13){
-               return;
-        }
-        $scope.export.contents += '<style>\r\n';
-        $scope.export.contents += 'body * { font-size: '+$scope.fieldsConfig.styles.font_size+'px;}\r\n';
-        $scope.export.contents += '.fixed_name_width { width: '+$scope.fieldsConfig.styles.fixed_name_width+'px;}\r\n';
-        $scope.export.contents += '.fixed_item_width { width: '+$scope.fieldsConfig.styles.fixed_item_width+'px;}\r\n';
-        $scope.export.contents += '</style>\r\n';
-    }
-    $scope.export.getTitleContent = function(){
-        if(!$scope.fieldsConfig.title) return;
-        $scope.export.contents += '<div class="title">'+ $scope.fieldsConfig.title +'</div>\r\n';
-    },
-    $scope.export.getSubTitleContent = function(){
-        if(!$scope.fieldsConfig.subTitle) return;
-        $scope.export.contents += '<div class="sub_title">'+ $scope.fieldsConfig.subTitle +'</div>\r\n';
-    },
-    $scope.export.getListInfoContent = function(){
-        var validListInfo = _.filter($scope.fieldsConfig.listInfo,function(item,index){return item.name});
-        if(!validListInfo.length) return;
-        $scope.export.contents += '<ul class="list_info">\r\n';
-        _.each(validListInfo, function(item,index){
-            $scope.export.contents += '<li>';
-            $scope.export.contents += item.name;
-            $scope.export.contents += '<span class="underline w100">';
-            $scope.export.contents += item.value;
-            $scope.export.contents += '</span>';
-            $scope.export.contents += '</li>\r\n';
-        });
-        $scope.export.contents += '</ul>';    
-    }
-    $scope.export.getField1Content = function(xField){
-        for(var i = 0 ; i < xField.lineNum;i++){
-            var notFirstLineClass = i > 0 ? "visibility_hidden" : "";
-            $scope.export.contents += '<div class="line">\r\n';
-            $scope.export.contents += '<span class="field_name fixed_name_width '+ notFirstLineClass +'">' + xField.name + '</span>\r\n';
-            $scope.export.contents += '<span class="underline la w100"></span>\r\n';
-            $scope.export.contents += '</div>\r\n';   
-        }
-    }
-    $scope.export.getField2Content = function(xField){
-        $scope.export.contents += '<div class="line">\r\n';
-        $scope.export.contents += '<span class="field_name fixed_name_width">'+ xField.name+ '</span>\r\n';
-
-        var labelClassPrefix = xField.isCheckbox ? "checkbox" : "radio";
-        _.each(xField.content,function(contentField,contentindex){
-            var widthClass = contentField.detail.indexOf("#input#") >= 0 ? "auto" : "";
-            $scope.export.contents += '<label class="field_item fixed_item_width ' + labelClassPrefix + '-inline '+widthClass+'">\r\n';
-            $scope.export.contents += '<input type="' + labelClassPrefix + '">' + $scope.htmlFunc.getFieldContentHTML(contentField.detail);
-            $scope.export.contents += '</label>\r\n';
-        })
-        $scope.export.contents += '</div>\r\n';
-    }
-    $scope.export.getFieldsContent = function(){
-        if(!$scope.fieldsConfig.fields.length) return;
-        var sortFields = _.sortBy($scope.fieldsConfig.fields,"sort");
-        _.each(sortFields,function(field,index){
-            // 类型一
-            if(field.lineNum){
-                $scope.export.getField1Content(field);
-            }else{
-                $scope.export.getField2Content(field);
-            }
-        })
-
-    },
-    $scope.export.clickExportContents = function(){
-        $scope.export.contents = "";
-        $scope.export.getStylesContent();
-        $scope.export.getTitleContent();
-        $scope.export.getSubTitleContent();
-        $scope.export.getListInfoContent();
-        $scope.export.getFieldsContent();
-        if(!$scope.export.contents){
-           spop({
-                template: "请先配置内容!",
-                style: "error",
-                autoclose: 2000
-            }); 
-        }
+    $scope.htmlFunc.getFieldContentFillHTML = function(xDetail){
+        return xDetail.replace(/#input#/g,'<input class="form-control inline_block margin_left4 margin_right4 w200" type="text">');
     }
 
     // 选择模板
@@ -375,7 +290,180 @@ app.controller('myCtrl', function($scope) {
         if($scope.template.templateArrs.length){
             $("#templateViewModal").modal("show");
         }
-    });  
+    });
+
+
+    // 导出 打印
+    $scope.export = {
+        contents: ""
+    }
+    $scope.export.getStylesContent = function(){
+        if($scope.fieldsConfig.styles.fixed_name_width == 70 && 
+           $scope.fieldsConfig.styles.fixed_item_width == 70 && 
+           $scope.fieldsConfig.styles.font_size == 13){
+               return;
+        }
+        $scope.export.contents += '<style>\r\n';
+        $scope.export.contents += 'body * { font-size: '+$scope.fieldsConfig.styles.font_size+'px;}\r\n';
+        $scope.export.contents += '.fixed_name_width { width: '+$scope.fieldsConfig.styles.fixed_name_width+'px;}\r\n';
+        $scope.export.contents += '.fixed_item_width { width: '+$scope.fieldsConfig.styles.fixed_item_width+'px;}\r\n';
+        $scope.export.contents += '</style>\r\n';
+    }
+    $scope.export.getTitleContent = function(){
+        if(!$scope.fieldsConfig.title) return;
+        $scope.export.contents += '<div class="title">'+ $scope.fieldsConfig.title +'</div>\r\n';
+    }
+    $scope.export.getSubTitleContent = function(){
+        if(!$scope.fieldsConfig.subTitle) return;
+        $scope.export.contents += '<div class="sub_title">'+ $scope.fieldsConfig.subTitle +'</div>\r\n';
+    }
+    $scope.export.getListInfoContent = function(){
+        var validListInfo = _.filter($scope.fieldsConfig.listInfo,function(item,index){return item.name});
+        if(!validListInfo.length) return;
+        $scope.export.contents += '<ul class="list_info">\r\n';
+        _.each(validListInfo, function(item,index){
+            $scope.export.contents += '<li>';
+            $scope.export.contents += item.name;
+            $scope.export.contents += '<span class="underline w100">';
+            $scope.export.contents += item.value;
+            $scope.export.contents += '</span>';
+            $scope.export.contents += '</li>\r\n';
+        });
+        $scope.export.contents += '</ul>';    
+    }
+    $scope.export.getField1Content = function(xField){
+        for(var i = 0 ; i < xField.lineNum;i++){
+            var notFirstLineClass = i > 0 ? "visibility_hidden" : "";
+            $scope.export.contents += '<div class="line">\r\n';
+            $scope.export.contents += '<span class="field_name fixed_name_width '+ notFirstLineClass +'">' + xField.name + '</span>\r\n';
+            $scope.export.contents += '<span class="underline la w100"></span>\r\n';
+            $scope.export.contents += '</div>\r\n';   
+        }
+    }
+    $scope.export.getField2Content = function(xField){
+        $scope.export.contents += '<div class="line">\r\n';
+        $scope.export.contents += '<span class="field_name fixed_name_width">'+ xField.name+ '</span>\r\n';
+
+        var labelClassPrefix = xField.isCheckbox ? "checkbox" : "radio";
+        _.each(xField.content,function(contentField,contentindex){
+            var widthClass = contentField.detail.indexOf("#input#") >= 0 ? "auto" : "";
+            $scope.export.contents += '<label class="field_item fixed_item_width ' + labelClassPrefix + '-inline '+widthClass+'">\r\n';
+            $scope.export.contents += '<input type="' + labelClassPrefix + '">' + $scope.htmlFunc.getFieldContentHTML(contentField.detail);
+            $scope.export.contents += '</label>\r\n';
+        })
+        $scope.export.contents += '</div>\r\n';
+    }
+    $scope.export.getFieldsContent = function(){
+        if(!$scope.fieldsConfig.fields.length) return;
+        var sortFields = _.sortBy($scope.fieldsConfig.fields,"sort");
+        _.each(sortFields,function(field,index){
+            // 类型一
+            if(field.lineNum){
+                $scope.export.getField1Content(field);
+            }else{
+                $scope.export.getField2Content(field);
+            }
+        })
+
+    }
+    $scope.export.clickExportContents = function(){
+        $scope.export.contents = "";
+        $scope.export.getStylesContent();
+        $scope.export.getTitleContent();
+        $scope.export.getSubTitleContent();
+        $scope.export.getListInfoContent();
+        $scope.export.getFieldsContent();
+        if(!$scope.export.contents){
+           spop({
+                template: "请先配置内容!",
+                style: "error",
+                autoclose: 2000
+            }); 
+        }
+    } 
+
+    // 导出 录入
+    $scope.exportFill = {
+        contents: ""
+    }
+    $scope.exportFill.getStylesContent = function(){
+        if($scope.fieldsConfig.styles.fixed_name_width == 70 && 
+           $scope.fieldsConfig.styles.fixed_item_width == 70 && 
+           $scope.fieldsConfig.styles.font_size == 13){
+               return;
+        }
+        $scope.exportFill.contents += '<style>\r\n';
+        $scope.exportFill.contents += 'body * { font-size: '+$scope.fieldsConfig.styles.font_size+'px;}\r\n';
+        $scope.exportFill.contents += '.edit_assessment_table .fixed_name_width { width: '+$scope.fieldsConfig.styles.fixed_name_width+'px;}\r\n';
+        $scope.exportFill.contents += '.edit_assessment_table .fixed_item_width { width: '+$scope.fieldsConfig.styles.fixed_item_width+'px;}\r\n';
+        $scope.exportFill.contents += '</style>\r\n';
+    }
+    $scope.exportFill.getTitleContent = function(){
+        if(!$scope.fieldsConfig.title) return;
+        $scope.exportFill.contents += '<div class="title">'+ $scope.fieldsConfig.title +'</div>\r\n';
+    }
+    $scope.exportFill.getSubTitleContent = function(){
+        if(!$scope.fieldsConfig.subTitle) return;
+        $scope.exportFill.contents += '<div class="sub_title">'+ $scope.fieldsConfig.subTitle +'</div>\r\n';
+    }
+    $scope.exportFill.getListInfoContent = function(){
+        var validListInfo = _.filter($scope.fieldsConfig.listInfo,function(item,index){return item.name});
+        if(!validListInfo.length) return;
+        _.each(validListInfo, function(item,index){
+            $scope.exportFill.contents += '<div class="input-group">';
+            $scope.exportFill.contents += '<div class="input-group-addon">' + item.name + '</div>';
+            $scope.exportFill.contents += '<input type="text" class="form-control" disabled value="'+ item.value +'">';
+            $scope.exportFill.contents += '</div>\r\n';
+        });
+    }
+    $scope.exportFill.getField1Content = function(xField){
+        $scope.exportFill.contents += '<div class="line">\r\n';
+        $scope.exportFill.contents += '<span class="field_name fixed_name_width v_top">' + xField.name + '</span>\r\n';
+        $scope.exportFill.contents += '<textarea class="form-control inline_block" style="width: 300px;" rows="'+ xField.lineNum +'"></textarea>\r\n';
+        $scope.exportFill.contents += '</div>\r\n';   
+    }
+    $scope.exportFill.getField2Content = function(xField){
+        $scope.exportFill.contents += '<div class="line">\r\n';
+        $scope.exportFill.contents += '<span class="field_name fixed_name_width">'+ xField.name+ '</span>\r\n';
+
+        var labelClassPrefix = xField.isCheckbox ? "checkbox" : "radio";
+        _.each(xField.content,function(contentField,contentindex){
+            var widthClass = contentField.detail.indexOf("#input#") >= 0 ? "auto" : "";
+            $scope.exportFill.contents += '<label class="field_item fixed_item_width ' + labelClassPrefix + '-inline '+widthClass+'">\r\n';
+            $scope.exportFill.contents += '<input type="' + labelClassPrefix + '">' + $scope.htmlFunc.getFieldContentFillHTML(contentField.detail);
+            $scope.exportFill.contents += '</label>\r\n';
+        })
+        $scope.exportFill.contents += '</div>\r\n';
+    }
+    $scope.exportFill.getFieldsContent = function(){
+        if(!$scope.fieldsConfig.fields.length) return;
+        var sortFields = _.sortBy($scope.fieldsConfig.fields,"sort");
+        _.each(sortFields,function(field,index){
+            // 类型一
+            if(field.lineNum){
+                $scope.exportFill.getField1Content(field);
+            }else{
+                $scope.exportFill.getField2Content(field);
+            }
+        })
+
+    }
+    $scope.exportFill.clickExportContents = function(){
+        $scope.exportFill.contents = '<div class="edit_assessment_table">\r\n';
+        $scope.exportFill.getStylesContent();
+        $scope.exportFill.getTitleContent();
+        $scope.exportFill.getSubTitleContent();
+        $scope.exportFill.getListInfoContent();
+        $scope.exportFill.getFieldsContent();
+        $scope.exportFill.contents += '</div>';
+        if(!$scope.export.contents){
+           spop({
+                template: "请先配置内容!",
+                style: "error",
+                autoclose: 2000
+            }); 
+        }
+    } 
 });
 
 // 输出HTML
@@ -415,6 +503,7 @@ $(function(){
     })
     // 复制代码到剪贴板
     var xClipboard = new ClipboardJS('#copy_btn');
+    var xClipboardFill = new ClipboardJS('#copy_btn_fill');
     xClipboard.on('success', function(e) {
         spop({
             template: "复制成功!",
@@ -424,6 +513,22 @@ $(function(){
         e.clearSelection();
     });
     xClipboard.on('error', function(e) {
+        spop({
+            template: "复制失败,请重试!",
+            style: "error",
+            autoclose: 2000
+        });
+        e.clearSelection();
+    });
+    xClipboardFill.on('success', function(e) {
+        spop({
+            template: "复制成功!",
+            style: "success",
+            autoclose: 2000
+        });
+        e.clearSelection();
+    });
+    xClipboardFill.on('error', function(e) {
         spop({
             template: "复制失败,请重试!",
             style: "error",

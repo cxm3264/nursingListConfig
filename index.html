@@ -119,14 +119,31 @@
                 </div>
             </div>
             <div ng-if="listGroup.activeItemName == '导出'">
-                <div ng-if="export.contents" >
-                    <pre style="height:calc(100vh - 90px);overflow-y: auto;"><code id="copy_code">{{export.contents}}</code></pre>
-                    <div class="clearfix">
-                        <button class="btn btn-lg btn-inverse pull-left" id="copy_btn" 
+                <div ng-if="export.contents">
+                    <div  style="height:calc(100vh - 100px);overflow: hidden;">
+                        <div style="height: 50%;">
+                            <h6 class="margin_top0 margin_bottom10">
+                                打印内容
+                                <img src="images/copy.png" alt="" class="pull-right" role="button"
+                                     id="copy_btn" data-clipboard-action="copy" data-clipboard-target="#copy_code">
+                            </h6>
+                            <pre style="height: calc(100% - 36px);"><code id="copy_code">{{export.contents}}</code></pre>
+                        </div>
+                        <div style="height: 50%;">
+                            <h6 class="margin_top10 margin_bottom10">
+                                录入内容
+                                <img src="images/copy.png" alt="" class="pull-right" role="button"
+                                     id="copy_btn_fill" data-clipboard-action="copy" data-clipboard-target="#copy_code_fill">
+                            </h6>
+                            <pre style="height:calc(100% - 46px);;overflow-y: auto;"><code id="copy_code_fill">{{exportFill.contents}}</code></pre>
+                        </div>      
+                    </div>
+                    <div class="clearfix margin_top20">
+                        <!-- <button class="btn btn-lg btn-inverse pull-left" id="copy_btn" 
                                 data-clipboard-action="copy" 
                                 data-clipboard-target="#copy_code">
-                                复制内容
-                        </button>
+                                复制录入内容
+                        </button> -->
                         <button class="btn btn-lg btn-info pull-right"
                                 ng-click="template.clickOpenTemplateModal()">
                                 另存为模板
