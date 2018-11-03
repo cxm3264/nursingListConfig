@@ -138,15 +138,16 @@ body {
  }
 .edit_icon{ 
     color: @wet-asphalt;
+    font-size: 28px;
 }
 
 .line{
     
 @line_left_width: 100px;
-@line_operate_width: 70px;
+@line_operate_width: 106px;
     padding: 5px;
     position: relative;
-    margin-top: 10px;
+    margin: 10px 5px 0;
     .left,.right{
         float: left;
     }
@@ -211,17 +212,25 @@ body {
 
 #templateViewModal{
     .modal-dialog{
-        width: 900px;
+        width: 862px;
     }
     .tile_wrap {
         display: flex;
         flex-wrap: wrap;
-         justify-content: center;
+        justify-content: center;
+        max-height: 504px;
+        overflow-y: auto;
+        overflow-x: hidden;
         .tile { 
+            &:nth-child(4n){
+                margin-right: 0;
+            }
             width: 200px;
-            margin-right:10px;
+            margin:0 10px 10px 0;
             display: inline-block;
-            margin-bottom: 0;
+            .tile-image {
+                margin:20px 0 0 0;
+            }
             .tile-title {
                 cursor: default;
             }

@@ -14,11 +14,8 @@
 
 <body ng-app="myApp" ng-controller="myCtrl">
     <!-- <div style="position: fixed;left: 0; top: 0;width: 380px;">
-        status.isEnableTemplate{{status.isEnableTemplate}}
+        editingField :{{editingField }}
         <br><br>
-        template.activeTemplateName{{template.activeTemplateName}}
-        <br><br>
-        fieldsConfig:{{fieldsConfig}}
     </div> -->
     <div class="container config">
         <div class="list-group list--nav">
@@ -33,13 +30,13 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label">标题名称</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" ng-model="fieldsConfig.title">
+                            <input autocomplete="off" type="text" class="form-control" ng-model="fieldsConfig.title">
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">副标题名称</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" ng-model="fieldsConfig.subTitle">
+                            <input autocomplete="off" type="text" class="form-control" ng-model="fieldsConfig.subTitle">
                         </div>
                     </div>
                 </form>
@@ -49,19 +46,19 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label">字体大小</label>
                         <div class="col-sm-10">
-                            <input type="number" class="form-control" ng-model="fieldsConfig.styles.font_size">
+                            <input autocomplete="off" type="number" class="form-control" ng-model="fieldsConfig.styles.font_size">
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">字段名宽度</label>
                         <div class="col-sm-10">
-                            <input type="number" class="form-control" ng-model="fieldsConfig.styles.fixed_name_width">
+                            <input autocomplete="off" type="number" class="form-control" ng-model="fieldsConfig.styles.fixed_name_width">
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">字段内容宽度</label>
                         <div class="col-sm-10">
-                            <input type="number" class="form-control" ng-model="fieldsConfig.styles.fixed_item_width">
+                            <input autocomplete="off" type="number" class="form-control" ng-model="fieldsConfig.styles.fixed_item_width">
                         </div>
                     </div>
                 </form>
@@ -73,10 +70,10 @@
                              ng-drag="true" ng-drop="true" ng-drag-data="list"
                             ng-drop-success="sort.dropSuccess(list,$data,$event)">
                             <div class="col-sm-4 padding_right0">
-                                <input type="text" class="form-control" placeholder="字段名" ng-model="list.name">
+                                <input autocomplete="off" type="text" class="form-control" placeholder="字段名" ng-model="list.name">
                             </div>
                             <div class="col-sm-7 padding_right0">
-                                <input type="text" class="form-control" placeholder="字段内容" ng-model="list.value">
+                                <input autocomplete="off" type="text" class="form-control" placeholder="字段内容" ng-model="list.value">
                             </div>
                             <div class="col-sm-1">
                                 <i class="fa fa-bars form_icon drag_icon" ng-drag-handle="true"></i>
@@ -103,7 +100,7 @@
                                 <label class="inline_block {{fieldItem.getBoxClass(field)}}"  
                                     ng-repeat="fieldContent in field.content"
                                     ng-style="stylesFunc.getFieldItemStyle(fieldContent);">
-                                    <input type="{{fieldItem.getBoxClass(field)}}" name="{{field.name}}"
+                                    <input autocomplete="off" type="{{fieldItem.getBoxClass(field)}}" name="{{field.name}}"
                                         data-toggle="{{fieldItem.getBoxClass(field)}}" 
                                         class="custom-{{fieldItem.getBoxClass(field)}}">
                                     <span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
@@ -112,8 +109,10 @@
                             </div>
                         </div>
                         <div class="line_operate">
-                            <i class="fa fa-bars form_icon drag_icon" ng-drag-handle="true"></i>
+                            <i class="fa fa-edit form_icon edit_icon" ng-click="fieldItem.clickEditField(field)"></i>
                             <i class="fa fa-times form_icon delete_icon" ng-click="fieldItem.clickDeleteField(field)"></i>
+                            <i class="fa fa-bars form_icon drag_icon" ng-drag-handle="true"></i>
+                            
                         </div>
                     </div>
                 </div>
@@ -197,14 +196,14 @@
                             <div class="form-group">
                                 <label class="col-xs-2 control-label padding_left0">项目名称</label>
                                 <div class="col-xs-10">
-                                    <input type="text" class="form-control col-xs-10" set-focus 
+                                    <input autocomplete="off" type="text" class="form-control col-xs-10" set-focus 
                                            ng-model="editingField.name">
                                 </div>
                             </div>
                             <div class="form-group margin_bottom0">
                                 <label class="col-xs-2 control-label padding_left0">文本行数</label>
                                 <div class="col-xs-10">
-                                    <input type="number" class="form-control col-xs-10" min="1" max="5" ng-model="editingField.lineNum">
+                                    <input autocomplete="off" type="number" class="form-control col-xs-10" min="1" max="5" ng-model="editingField.lineNum">
                                 </div>
                             </div>
                         </form>
@@ -216,32 +215,32 @@
                             <div class="form-group">
                                 <label class="col-xs-2 control-label padding_left0">项目名称</label>
                                 <div class="col-xs-10 padding_right0">
-                                    <input type="text" class="form-control" set-focus ng-model="editingField.name">
+                                    <input autocomplete="off" type="text" class="form-control" set-focus ng-model="editingField.name">
                                 </div>
                             </div>
-                            <!-- <div class="form-group">
+                            <div class="form-group">
                                 <label class="col-xs-2 control-label padding_left0">单/复选框</label>
                                 <div class="col-xs-10 padding_right0">
                                     <label class="radio inline_block" style="width: 120px;">
-                                        <input type="radio" name="isCheckbox" ng-value="1" 
+                                        <input autocomplete="off" type="radio" name="isCheckbox" ng-value="1" 
                                                ng-model="editingField.isCheckbox" data-toggle="radio" 
                                                class="custom-radio">
                                         <span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
                                         复选框
                                     </label>
                                     <label class="radio inline_block" style="width: 120px;">
-                                        <input type="radio" name="isCheckbox" ng-value="0" 
+                                        <input autocomplete="off" type="radio" name="isCheckbox" ng-value="0" 
                                                ng-model="editingField.isCheckbox" data-toggle="radio" 
                                                class="custom-radio">
                                         <span class="icons"><span class="icon-unchecked"></span><span class="icon-checked"></span></span>
                                         单选框
                                     </label>
                                 </div>
-                            </div> -->
+                            </div>
                             <div ng-repeat="field in editingField.content track by $index" class="form-group">
                                 <label class="col-xs-2 control-label padding_left0">内容{{$index+1}}</label>
                                 <div class="col-xs-9">
-                                    <input type="text" class="form-control" placeholder="文本框请用#input#代替" 
+                                    <input autocomplete="off" type="text" class="form-control" placeholder="文本框请用#input#代替"
                                            ng-model="field.detail" id="detail_{{$index+1}}">
                                 </div>
                                 <div class="col-xs-1 padding_left0 padding_right0">
@@ -280,7 +279,7 @@
                         <div class="form-group margin_bottom0">
                             <label class="col-xs-2 control-label padding_left0">模板名称</label>
                             <div class="col-xs-10">
-                                <input type="text" class="form-control col-xs-10"
+                                <input autocomplete="off" type="text" class="form-control col-xs-10"
                                         ng-model="template.activeTemplateName">
                             </div>
                         </div>
@@ -305,7 +304,8 @@
                     <h4 class="modal-title">选择模板</h4>
                 </div>
                 <div class="modal-body clearfix">
-                    <div class="tile_wrap">
+                    
+                    <div class="tile_wrap" ng-style="template.templateArrs.length > 4 ? {'justify-content': 'flex-start'} : {} ">
                         <div class="tile" 
                              ng-repeat="temp in template.templateArrs track by $index">
                             <img class="tile-image big-illustration" src="images/printer.svg">

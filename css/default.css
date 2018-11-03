@@ -2946,11 +2946,12 @@ body {
 }
 .edit_icon {
   color: #34495e;
+  font-size: 28px;
 }
 .line {
   padding: 5px;
   position: relative;
-  margin-top: 10px;
+  margin: 10px 5px 0;
 }
 .line .left,
 .line .right {
@@ -2960,7 +2961,7 @@ body {
   width: 100px;
 }
 .line .right {
-  width: calc(100% - 100px - 70px - 16px);
+  width: calc(100% - 100px - 106px - 16px);
 }
 .line .field_name,
 .line .checkbox.inline_block,
@@ -2990,7 +2991,7 @@ body {
   top: 5px;
 }
 .line .line_operate {
-  width: 70px;
+  width: 106px;
   position: absolute;
   top: 0;
   right: 0;
@@ -3013,18 +3014,26 @@ body {
   transition: linear .2s all;
 }
 #templateViewModal .modal-dialog {
-  width: 900px;
+  width: 862px;
 }
 #templateViewModal .tile_wrap {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  max-height: 504px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 #templateViewModal .tile_wrap .tile {
   width: 200px;
-  margin-right: 10px;
+  margin: 0 10px 10px 0;
   display: inline-block;
-  margin-bottom: 0;
+}
+#templateViewModal .tile_wrap .tile:nth-child(4n) {
+  margin-right: 0;
+}
+#templateViewModal .tile_wrap .tile .tile-image {
+  margin: 20px 0 0 0;
 }
 #templateViewModal .tile_wrap .tile .tile-title {
   cursor: default;

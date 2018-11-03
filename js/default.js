@@ -83,7 +83,13 @@ app.controller('myCtrl', function($scope) {
             if( xName == "导出"){
                 $scope.export.clickExportContents();
                 $scope.exportFill.clickExportContents();
-            }
+                if(!$scope.export.contents)
+                    spop({
+                        template: "请先配置内容!",
+                        style: "error",
+                        autoclose: 2000
+                    });
+                }
         }
     }
 
@@ -112,15 +118,18 @@ app.controller('myCtrl', function($scope) {
             };
             angular.copy(initField,$scope.editingField);
         },
+        // 点击打开项目弹窗 选择项目类型
         clickOpenItemModal: function(xFieldType){
             $scope.status.isEditingMode = 0;
             $scope.status.activeFieldType = 1;
             $("#itemModal").modal("show");
             angular.copy({},$scope.editingField);
         },
+        // 点击切换项目类型
         clickSelectItemType: function(xFieldType){
             $scope.status.activeFieldType = xFieldType;
         },
+        // 点击保存项目类型
         clickSaveItemType: function(){
             $scope.status.isEditingMode = 1;
              if($scope.status.activeFieldType == 1){
@@ -129,6 +138,7 @@ app.controller('myCtrl', function($scope) {
                 $scope.fieldItem.initType2Field();
             }
         },
+        // 点击新增项目内容
         clickAddNewContent: function(){
             $scope.editingField.content.push({detail:""});
             setTimeout(function(){
@@ -136,8 +146,17 @@ app.controller('myCtrl', function($scope) {
             },0)
             
         },
+        // 点击保存项目字段
         clickSaveField: function(){
-            $scope.fieldsConfig.fields.push(angular.copy($scope.editingField));
+            var editField = _.find($scope.fieldsConfig.fields,function(field,index){
+                return field.id == $scope.editingField.id
+            })
+            if(editField){
+                angular.copy($scope.editingField,editField)
+            }else{
+                // 新增
+                $scope.fieldsConfig.fields.push(angular.copy($scope.editingField));
+            }
             $("#itemModal").modal("hide");
             $scope.status.activeFieldType = 1;
             spop({
@@ -146,6 +165,7 @@ app.controller('myCtrl', function($scope) {
                 autoclose: 2000
             });
         },
+        // 点击删除项目字段
         clickDeleteField: function(xField){
             $scope.fieldsConfig.fields = _.filter($scope.fieldsConfig.fields,function(item,index){
                 return item.id != xField.id
@@ -156,6 +176,7 @@ app.controller('myCtrl', function($scope) {
                 autoclose: 2000
             });
         },
+        // 点击删除项目内容
         clickDeleteFieldContent: function(xField){
             $scope.editingField.content = _.filter($scope.editingField.content,function(item,index){
                 return item.detail != xField.detail
@@ -165,6 +186,13 @@ app.controller('myCtrl', function($scope) {
                 style: "success",
                 autoclose: 2000
             });
+        },
+        // 点击编辑项目字段
+        clickEditField: function(xField){
+            $("#itemModal").modal("show");
+            $scope.status.isEditingMode = 1;
+            $scope.status.activeFieldType = xField.lineNum ? 1 : 2;
+            angular.copy(xField,$scope.editingField);
         },
         // return string "checkbox"/"radio"
         getBoxClass: function(xField){
@@ -192,7 +220,7 @@ app.controller('myCtrl', function($scope) {
         return xDetail.replace(/#input#/g,'<span class="underline" style="width: 50px;"></span>');
     }
     $scope.htmlFunc.getFieldContentFillHTML = function(xDetail){
-        return xDetail.replace(/#input#/g,'<input class="form-control inline_block margin_left4 margin_right4 w200" type="text">');
+        return xDetail.replace(/#input#/g,$scope.exportFill.defaultInputHTML);
     }
 
     // 选择模板
@@ -210,7 +238,7 @@ app.controller('myCtrl', function($scope) {
     $scope.template.clickSaveTemplate = function(){
         // 存储 判断是否超过固定长度/是否重名
         // 判断 超过最大模板数
-        if($scope.template.templateArrs.length >= 4){spop({template: "最多存储4个模板!",style: "error"});return;}
+        if($scope.template.templateArrs.length >= 20){spop({template: "最多存储4个模板!",style: "error"});return;}
             // 判断 模板名称是否重复
         var isNameUsed = _.find($scope.template.templateArrs,function(item,index){
             return item.templateName == $scope.template.activeTemplateName
@@ -304,10 +332,11 @@ app.controller('myCtrl', function($scope) {
                return;
         }
         $scope.export.contents += '<style>\r\n';
-        $scope.export.contents += 'body * { font-size: '+$scope.fieldsConfig.styles.font_size+'px;}\r\n';
-        $scope.export.contents += '.fixed_name_width { width: '+$scope.fieldsConfig.styles.fixed_name_width+'px;}\r\n';
-        $scope.export.contents += '.fixed_item_width { width: '+$scope.fieldsConfig.styles.fixed_item_width+'px;}\r\n';
+        if($scope.fieldsConfig.styles.font_size != 13) $scope.export.contents += 'body * { font-size: '+$scope.fieldsConfig.styles.font_size+'px;}\r\n';
+        if($scope.fieldsConfig.styles.fixed_name_width != 70) $scope.export.contents += '.fixed_name_width { width: '+$scope.fieldsConfig.styles.fixed_name_width+'px;}\r\n';
+        if($scope.fieldsConfig.styles.fixed_item_width != 70) $scope.export.contents += '.fixed_item_width { width: '+$scope.fieldsConfig.styles.fixed_item_width+'px;}\r\n';
         $scope.export.contents += '</style>\r\n';
+        
     }
     $scope.export.getTitleContent = function(){
         if(!$scope.fieldsConfig.title) return;
@@ -344,11 +373,11 @@ app.controller('myCtrl', function($scope) {
         $scope.export.contents += '<div class="line">\r\n';
         $scope.export.contents += '<span class="field_name fixed_name_width">'+ xField.name+ '</span>\r\n';
 
-        var labelClassPrefix = xField.isCheckbox ? "checkbox" : "radio";
+        // var labelClassPrefix = xField.isCheckbox ? "checkbox" : "radio";
         _.each(xField.content,function(contentField,contentindex){
             var widthClass = contentField.detail.indexOf("#input#") >= 0 ? "auto" : "";
-            $scope.export.contents += '<label class="field_item fixed_item_width ' + labelClassPrefix + '-inline '+widthClass+'">\r\n';
-            $scope.export.contents += '<input type="' + labelClassPrefix + '">' + $scope.htmlFunc.getFieldContentHTML(contentField.detail);
+            $scope.export.contents += '<label class="field_item fixed_item_width checkbox-inline '+widthClass+'">\r\n';
+            $scope.export.contents += '<input type="checkbox">' + $scope.htmlFunc.getFieldContentHTML(contentField.detail);
             $scope.export.contents += '</label>\r\n';
         })
         $scope.export.contents += '</div>\r\n';
@@ -373,18 +402,12 @@ app.controller('myCtrl', function($scope) {
         $scope.export.getSubTitleContent();
         $scope.export.getListInfoContent();
         $scope.export.getFieldsContent();
-        if(!$scope.export.contents){
-           spop({
-                template: "请先配置内容!",
-                style: "error",
-                autoclose: 2000
-            }); 
-        }
     } 
 
     // 导出 录入
     $scope.exportFill = {
-        contents: ""
+        contents: "",
+        defaultInputHTML: '<input type="text" class="form-control inline_block input-sm margin_left4 margin_right4 w50"/>'
     }
     $scope.exportFill.getStylesContent = function(){
         if($scope.fieldsConfig.styles.fixed_name_width == 70 && 
@@ -427,11 +450,30 @@ app.controller('myCtrl', function($scope) {
         $scope.exportFill.contents += '<span class="field_name fixed_name_width">'+ xField.name+ '</span>\r\n';
 
         var labelClassPrefix = xField.isCheckbox ? "checkbox" : "radio";
+
         _.each(xField.content,function(contentField,contentindex){
-            var widthClass = contentField.detail.indexOf("#input#") >= 0 ? "auto" : "";
-            $scope.exportFill.contents += '<label class="field_item fixed_item_width ' + labelClassPrefix + '-inline '+widthClass+'">\r\n';
-            $scope.exportFill.contents += '<input type="' + labelClassPrefix + '">' + $scope.htmlFunc.getFieldContentFillHTML(contentField.detail);
-            $scope.exportFill.contents += '</label>\r\n';
+            // 将()替换为全角（）
+            contentField.detail = contentField.detail.replace(/\(/g,"（").replace(/\)/g,"）");
+
+            var descContent = contentField.detail.substring(contentField.detail.indexOf("（"),contentField.detail.indexOf("）")+1);
+            // 是否含有录入项
+            var isHasInput = contentField.detail.indexOf("#input#") >= 0;
+            // 如果含有录入想 则宽度auto
+            var widthClass = isHasInput ? "auto" :"";
+
+            $scope.exportFill.contents += '<label class="field_item fixed_item_width ' + labelClassPrefix + '-inline '+ widthClass +'">'
+
+            // 其他___,其他
+            if(!descContent){
+                $scope.exportFill.contents += '<input name="' + xField.id + '" type="' + labelClassPrefix + '">' + contentField.detail.replace(/#input#/g,'');
+                $scope.exportFill.contents += '</label>\r\n';
+                if(isHasInput)  $scope.exportFill.contents += $scope.exportFill.defaultInputHTML;
+            }else{
+                // 有（颜色___性质___次数___总量___）
+                $scope.exportFill.contents += '<input name="' + xField.id + '" type="' + labelClassPrefix + '">' + contentField.detail.substring(0,contentField.detail.indexOf("（"));
+                $scope.exportFill.contents += '</label>\r\n';
+                $scope.exportFill.contents += $scope.htmlFunc.getFieldContentFillHTML(descContent) + '\r\n';
+            }
         })
         $scope.exportFill.contents += '</div>\r\n';
     }
@@ -456,13 +498,6 @@ app.controller('myCtrl', function($scope) {
         $scope.exportFill.getListInfoContent();
         $scope.exportFill.getFieldsContent();
         $scope.exportFill.contents += '</div>';
-        if(!$scope.export.contents){
-           spop({
-                template: "请先配置内容!",
-                style: "error",
-                autoclose: 2000
-            }); 
-        }
     } 
 });
 
@@ -496,7 +531,7 @@ function getID(){
     return Number(Math.random().toString().substr(3,1) + Date.now()).toString(36);
 }
 
-$(function(){            
+$(function(){        
     // 自动聚焦
      $('#saveTemplateModal').on('shown.bs.modal', function (e) {
         $("#saveTemplateModal input").eq(0).focus();
@@ -540,8 +575,6 @@ $(function(){
     
 })
     
-
-
 
 
 
